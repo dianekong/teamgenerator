@@ -163,6 +163,27 @@ function getSkillInsight(skills) {
   return null;
 }
 
+function getDeptInsight(members) {
+  const depts = members.map(m => m.department).filter(Boolean);
+  if (depts.length < 2) return null;
+
+  const counts = depts.reduce((acc, d) => { acc[d] = (acc[d] || 0) + 1; return acc; }, {});
+  const uniqueDepts = Object.keys(counts).length;
+  const maxCount = Math.max(...Object.values(counts));
+  const dominantDept = Object.entries(counts).find(([, c]) => c === maxCount)?.[0];
+
+  if (uniqueDepts === depts.length)
+    return { text: `All different departments — fully cross-functional team`, tone: 'good' };
+  if (maxCount > Math.ceil(members.length / 2))
+    return { text: `Heavy ${dominantDept} presence — low cross-functional diversity`, tone: 'bad' };
+  if (uniqueDepts >= 3)
+    return { text: `${uniqueDepts} departments represented — solid cross-functional mix`, tone: 'good' };
+  if (uniqueDepts === 2)
+    return { text: `Only 2 departments — limited role variety on this team`, tone: 'warn' };
+
+  return null;
+}
+
 // ─── Round table ──────────────────────────────────────────────────────────────
 function TeamTable({ team, maxSize, showLabel, overId, rejectedTeam, onRename }) {
   const [editing, setEditing] = useState(false);
@@ -178,6 +199,7 @@ function TeamTable({ team, maxSize, showLabel, overId, rejectedTeam, onRename })
   const depts = [...new Set(membersFilled.map(m => m.department).filter(Boolean))];
   const hasMetrics = membersFilled.length >= 2 && (Object.values(skills).some(v => v > 0) || depts.length > 0);
   const insight = getSkillInsight(skills);
+  const deptInsight = getDeptInsight(membersFilled);
 
   const tableR = maxSize <= 4 ? 78 : maxSize <= 6 ? 93 : 108;
   const containerSize = (tableR + 60) * 2;
@@ -337,6 +359,23 @@ function TeamTable({ team, maxSize, showLabel, overId, rejectedTeam, onRename })
               }}
             >
               {insight.text}
+            </p>
+          )}
+          {deptInsight && (
+            <p
+              style={{
+                fontFamily: "'Nunito', sans-serif",
+                fontWeight: 700,
+                fontSize: 10,
+                color: INSIGHT_TONE[deptInsight.tone].color,
+                background: INSIGHT_TONE[deptInsight.tone].bg,
+                borderRadius: 8,
+                padding: '3px 8px',
+                textAlign: 'center',
+                lineHeight: 1.4,
+              }}
+            >
+              {deptInsight.text}
             </p>
           )}
         </div>
