@@ -257,7 +257,46 @@ export function RosterSetup({ people, setPeople, config, setConfig, onGenerate }
               border: '1.5px dashed #D4C5B5',
             }}
           >
-            <div className="text-5xl mb-3">👥</div>
+            <div className="mb-3" style={{ display: 'flex', justifyContent: 'center' }}>
+              <svg width="96" height="72" viewBox="0 0 96 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Left character */}
+                {/* Head */}
+                <rect x="8" y="4" width="22" height="22" rx="4" fill="#FEE8EA" stroke="#1A1A1A" strokeWidth="2.5"/>
+                {/* Eyes */}
+                <rect x="13" y="11" width="4" height="4" rx="1" fill="#1A1A1A"/>
+                <rect x="21" y="11" width="4" height="4" rx="1" fill="#1A1A1A"/>
+                {/* Smile */}
+                <path d="M14 20 Q19 24 24 20" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" fill="none"/>
+                {/* Body */}
+                <rect x="6" y="30" width="26" height="20" rx="4" fill="#F45B69" stroke="#1A1A1A" strokeWidth="2.5"/>
+                {/* Arms */}
+                <rect x="0" y="31" width="8" height="12" rx="3" fill="#FEE8EA" stroke="#1A1A1A" strokeWidth="2"/>
+                <rect x="30" y="31" width="8" height="12" rx="3" fill="#FEE8EA" stroke="#1A1A1A" strokeWidth="2"/>
+                {/* Legs */}
+                <rect x="9" y="48" width="8" height="14" rx="3" fill="#FEE8EA" stroke="#1A1A1A" strokeWidth="2"/>
+                <rect x="21" y="48" width="8" height="14" rx="3" fill="#FEE8EA" stroke="#1A1A1A" strokeWidth="2"/>
+
+                {/* "+" in the middle */}
+                <text x="48" y="38" textAnchor="middle" fontFamily="'Press Start 2P'" fontSize="14" fill="#D4C5B5" fontWeight="bold">+</text>
+
+                {/* Right character — dashed/ghost style */}
+                {/* Head */}
+                <rect x="66" y="4" width="22" height="22" rx="4" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2.5" strokeDasharray="4 2"/>
+                {/* Eyes (dots) */}
+                <rect x="71" y="11" width="4" height="4" rx="1" fill="#D4C5B5"/>
+                <rect x="79" y="11" width="4" height="4" rx="1" fill="#D4C5B5"/>
+                {/* Mouth flat */}
+                <rect x="74" y="20" width="8" height="2" rx="1" fill="#D4C5B5"/>
+                {/* Body */}
+                <rect x="64" y="30" width="26" height="20" rx="4" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2.5" strokeDasharray="4 2"/>
+                {/* Arms */}
+                <rect x="58" y="31" width="8" height="12" rx="3" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2" strokeDasharray="3 2"/>
+                <rect x="88" y="31" width="8" height="12" rx="3" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2" strokeDasharray="3 2"/>
+                {/* Legs */}
+                <rect x="67" y="48" width="8" height="14" rx="3" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2" strokeDasharray="3 2"/>
+                <rect x="79" y="48" width="8" height="14" rx="3" fill="#F7F0E8" stroke="#D4C5B5" strokeWidth="2" strokeDasharray="3 2"/>
+              </svg>
+            </div>
             Add at least 2 people to get started!
           </div>
         )}
