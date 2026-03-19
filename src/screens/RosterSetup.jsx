@@ -1,16 +1,43 @@
 import { useState } from 'react';
 import { UserPlus, Trash2 } from 'lucide-react';
+import { PersonAvatar } from '../components/PersonAvatar';
 
 const HAIR_COLORS = [
+  // Naturals
+  '#1A1008', // jet black
   '#2C1A0E', // near-black
   '#4A2F1A', // dark brown
   '#6B4226', // medium brown
   '#8B5E3C', // light brown
   '#C8A96E', // blonde
+  '#E8D48B', // platinum blonde
   '#8B3A1A', // auburn
-  '#717171', // silver/gray
-  '#A0724A', // warm tan
+  '#B85C2A', // copper
+  '#717171', // gray
+  '#ADADAD', // silver
+  '#FFFFFF',  // white
+  // Fantasy / vivid
+  '#E8344A', // cherry red
+  '#FF6B35', // flame orange
+  '#F7C948', // golden yellow
+  '#4CAF50', // forest green
+  '#00BCD4', // teal
+  '#2196F3', // electric blue
+  '#673AB7', // deep purple
+  '#E91E8C', // hot pink
+  '#FF80AB', // bubblegum
+  '#80DEEA', // ice blue
 ];
+
+const HAIR_COLOR_NAMES = [
+  'Jet Black', 'Near Black', 'Dark Brown', 'Brown', 'Light Brown',
+  'Blonde', 'Platinum', 'Auburn', 'Copper', 'Gray', 'Silver', 'White',
+  'Cherry Red', 'Flame', 'Golden', 'Forest', 'Teal',
+  'Electric Blue', 'Purple', 'Hot Pink', 'Bubblegum', 'Ice Blue',
+];
+
+const MALE_STYLE_NAMES   = ['Buzz', 'Spiky', 'Side Part', 'Curly'];
+const FEMALE_STYLE_NAMES = ['Long', 'Bun', 'Ponytail', 'Pixie'];
 
 let nextId = 1;
 const newPerson = (name = '') => ({
@@ -45,101 +72,270 @@ const inputBase = {
 const SKILL_LEVELS = ['Senior', 'Mid', 'Junior'];
 const DEPT_CHOICES = DEPT_OPTIONS.filter(d => d);
 
-function PersonRow({ person, onChange, onRemove, invalid }) {
-  const skill = SKILL_COLORS[person.skill];
+// ─── Avatar Customization Panel ────────────────────────────────────────────────
+function AvatarPicker({ person, onChange }) {
+  const styleNames = person.gender === 'female' ? FEMALE_STYLE_NAMES : MALE_STYLE_NAMES;
 
   return (
     <div
-      className="flex items-center gap-2 p-2.5 rounded-xl"
+      className="rounded-xl p-4 mt-1"
       style={{
-        background: invalid ? '#FEE8EA' : '#FFFFFF',
-        border: `1px solid ${invalid ? '#F45B69' : '#D4C5B5'}`,
+        background: '#FFFFFF',
+        border: '1.5px solid #D4C5B5',
+        boxShadow: '3px 3px 0 #1A1A1A',
       }}
     >
-      <input
-        className="flex-1 px-3 py-1.5"
+      {/* Hair Color */}
+      <div className="mb-4">
+        <div
+          style={{
+            fontFamily: "'Press Start 2P'",
+            fontSize: 8,
+            color: '#1A1A1A',
+            marginBottom: 10,
+            letterSpacing: '0.5px',
+          }}
+        >
+          Hair Color
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {/* Naturals row */}
+          <div className="flex gap-1.5 flex-wrap">
+            {HAIR_COLORS.slice(0, 12).map((color, i) => {
+              const selected = person.hairColor === color;
+              return (
+                <button
+                  key={color}
+                  onClick={() => onChange({ ...person, hairColor: color })}
+                  title={HAIR_COLOR_NAMES[i]}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: color,
+                    border: selected ? '2.5px solid #1A1A1A' : '2px solid #D4C5B5',
+                    boxShadow: selected ? '2px 2px 0 #1A1A1A' : 'none',
+                    transform: selected ? 'scale(1.2)' : 'scale(1)',
+                    transition: 'all 0.1s',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                    outline: color === '#FFFFFF' ? '1px solid #D4C5B5' : 'none',
+                  }}
+                />
+              );
+            })}
+          </div>
+          {/* Fantasy row */}
+          <div className="flex gap-1.5 flex-wrap">
+            {HAIR_COLORS.slice(12).map((color, i) => {
+              const selected = person.hairColor === color;
+              return (
+                <button
+                  key={color}
+                  onClick={() => onChange({ ...person, hairColor: color })}
+                  title={HAIR_COLOR_NAMES[12 + i]}
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderRadius: '50%',
+                    background: color,
+                    border: selected ? '2.5px solid #1A1A1A' : '2px solid #D4C5B5',
+                    boxShadow: selected ? '2px 2px 0 #1A1A1A' : 'none',
+                    transform: selected ? 'scale(1.2)' : 'scale(1)',
+                    transition: 'all 0.1s',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Hairstyle */}
+      <div>
+        <div
+          style={{
+            fontFamily: "'Press Start 2P'",
+            fontSize: 8,
+            color: '#1A1A1A',
+            marginBottom: 10,
+            letterSpacing: '0.5px',
+          }}
+        >
+          Hairstyle
+        </div>
+        <div className="flex gap-2">
+          {[0, 1, 2, 3].map(styleIdx => {
+            const selected = person.hairstyle === styleIdx;
+            return (
+              <button
+                key={styleIdx}
+                onClick={() => onChange({ ...person, hairstyle: styleIdx })}
+                title={styleNames[styleIdx]}
+                className="flex flex-col items-center btn-press"
+                style={{
+                  padding: '6px 8px 4px',
+                  borderRadius: 10,
+                  background: selected ? '#FEE8EA' : '#F7F0E8',
+                  border: `1.5px solid ${selected ? '#F45B69' : '#D4C5B5'}`,
+                  boxShadow: selected ? '2px 2px 0 #1A1A1A' : 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.1s',
+                }}
+              >
+                <PersonAvatar
+                  person={{ ...person, hairstyle: styleIdx, teamColor: '#BBBBBB', skill: '' }}
+                  size={36}
+                  showLabel={false}
+                />
+                <span
+                  style={{
+                    fontFamily: "'Nunito', sans-serif",
+                    fontWeight: 800,
+                    fontSize: 9,
+                    marginTop: 4,
+                    color: selected ? '#F45B69' : '#888888',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {styleNames[styleIdx]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PersonRow({ person, onChange, onRemove, invalid }) {
+  const [showPicker, setShowPicker] = useState(false);
+  const skill = SKILL_COLORS[person.skill];
+
+  return (
+    <div className="flex flex-col">
+      <div
+        className="flex items-center gap-2 p-2.5 rounded-xl"
         style={{
-          ...inputBase,
-          background: invalid ? '#FEE8EA' : '#F7F0E8',
+          background: invalid ? '#FEE8EA' : '#FFFFFF',
           border: `1px solid ${invalid ? '#F45B69' : '#D4C5B5'}`,
         }}
-        placeholder="Name"
-        value={person.name}
-        onChange={e => onChange({ ...person, name: e.target.value })}
-      />
-
-      {/* Gender toggle: only male / female */}
-      <button
-        onClick={() => onChange({ ...person, gender: person.gender === 'male' ? 'female' : 'male' })}
-        className="btn-press rounded-lg px-2 py-1.5 font-bold"
-        style={{
-          fontFamily: "'Nunito', sans-serif",
-          background: person.gender === 'female' ? '#F5EEF8' : '#EAF2FD',
-          color: person.gender === 'female' ? '#9B59B6' : '#4A90E2',
-          border: '1.5px solid #1A1A1A',
-          boxShadow: '2px 2px 0 #1A1A1A',
-          minWidth: 54,
-          fontSize: 11,
-        }}
-        title="Toggle gender"
       >
-        {person.gender === 'female' ? '👩 F' : '👨 M'}
-      </button>
+        {/* Avatar preview — click to toggle picker */}
+        <button
+          onClick={() => setShowPicker(v => !v)}
+          title="Customize avatar"
+          style={{
+            background: showPicker ? '#FEE8EA' : '#F7F0E8',
+            border: `1.5px solid ${showPicker ? '#F45B69' : '#D4C5B5'}`,
+            borderRadius: 10,
+            padding: '3px 5px 0',
+            boxShadow: showPicker ? '2px 2px 0 #1A1A1A' : 'none',
+            cursor: 'pointer',
+            transition: 'all 0.1s',
+            flexShrink: 0,
+            lineHeight: 0,
+          }}
+        >
+          <PersonAvatar
+            person={{ ...person, teamColor: '#BBBBBB' }}
+            size={34}
+            showLabel={false}
+          />
+        </button>
 
-      {/* Skill dropdown */}
-      <select
-        className="rounded-lg px-2 py-1.5 appearance-none"
-        style={{
-          ...inputBase,
-          background: skill ? skill.bg : '#F7F0E8',
-          color: skill ? skill.text : '#888888',
-          border: `1px solid ${skill ? skill.dot + '88' : '#D4C5B5'}`,
-          fontSize: 12,
-          minWidth: 88,
-        }}
-        value={person.skill}
-        onChange={e => onChange({ ...person, skill: e.target.value })}
-      >
-        <option value="">— Skill</option>
-        <option value="Junior">Junior</option>
-        <option value="Mid">Mid</option>
-        <option value="Senior">Senior</option>
-      </select>
+        <input
+          className="flex-1 px-3 py-1.5"
+          style={{
+            ...inputBase,
+            background: invalid ? '#FEE8EA' : '#F7F0E8',
+            border: `1px solid ${invalid ? '#F45B69' : '#D4C5B5'}`,
+          }}
+          placeholder="Name"
+          value={person.name}
+          onChange={e => onChange({ ...person, name: e.target.value })}
+        />
 
-      {/* Department dropdown */}
-      <select
-        className="rounded-lg px-2 py-1.5 appearance-none"
-        style={{
-          ...inputBase,
-          background: person.department ? '#F7F0E8' : '#F7F0E8',
-          color: person.department ? '#1A1A1A' : '#888888',
-          fontSize: 12,
-          minWidth: 140,
-        }}
-        value={person.department}
-        onChange={e => onChange({ ...person, department: e.target.value })}
-      >
-        {DEPT_OPTIONS.map(d => (
-          <option key={d} value={d}>{d || '— Dept'}</option>
-        ))}
-      </select>
+        {/* Gender toggle: only male / female */}
+        <button
+          onClick={() => onChange({ ...person, gender: person.gender === 'male' ? 'female' : 'male' })}
+          className="btn-press rounded-lg px-2 py-1.5 font-bold"
+          style={{
+            fontFamily: "'Nunito', sans-serif",
+            background: person.gender === 'female' ? '#F5EEF8' : '#EAF2FD',
+            color: person.gender === 'female' ? '#9B59B6' : '#4A90E2',
+            border: '1.5px solid #1A1A1A',
+            boxShadow: '2px 2px 0 #1A1A1A',
+            minWidth: 54,
+            fontSize: 11,
+          }}
+          title="Toggle gender"
+        >
+          {person.gender === 'female' ? '👩 F' : '👨 M'}
+        </button>
 
-      <button
-        onClick={onRemove}
-        className="btn-press rounded-lg p-1.5"
-        style={{
-          color: '#CCCCCC',
-          background: '#F0EDE8',
-          border: '1.5px solid #1A1A1A',
-          boxShadow: '2px 2px 0 #1A1A1A',
-          lineHeight: 1,
-        }}
-        onMouseEnter={e => { e.currentTarget.style.color = '#F45B69'; e.currentTarget.style.borderColor = '#F45B69'; }}
-        onMouseLeave={e => { e.currentTarget.style.color = '#CCCCCC'; e.currentTarget.style.borderColor = '#1A1A1A'; }}
-        title="Remove"
-      >
-        <Trash2 size={14} />
-      </button>
+        {/* Skill dropdown */}
+        <select
+          className="rounded-lg px-2 py-1.5 appearance-none"
+          style={{
+            ...inputBase,
+            background: skill ? skill.bg : '#F7F0E8',
+            color: skill ? skill.text : '#888888',
+            border: `1px solid ${skill ? skill.dot + '88' : '#D4C5B5'}`,
+            fontSize: 12,
+            minWidth: 88,
+          }}
+          value={person.skill}
+          onChange={e => onChange({ ...person, skill: e.target.value })}
+        >
+          <option value="">— Skill</option>
+          <option value="Junior">Junior</option>
+          <option value="Mid">Mid</option>
+          <option value="Senior">Senior</option>
+        </select>
+
+        {/* Department dropdown */}
+        <select
+          className="rounded-lg px-2 py-1.5 appearance-none"
+          style={{
+            ...inputBase,
+            background: '#F7F0E8',
+            color: person.department ? '#1A1A1A' : '#888888',
+            fontSize: 12,
+            minWidth: 140,
+          }}
+          value={person.department}
+          onChange={e => onChange({ ...person, department: e.target.value })}
+        >
+          {DEPT_OPTIONS.map(d => (
+            <option key={d} value={d}>{d || '— Dept'}</option>
+          ))}
+        </select>
+
+        <button
+          onClick={onRemove}
+          className="btn-press rounded-lg p-1.5"
+          style={{
+            color: '#CCCCCC',
+            background: '#F0EDE8',
+            border: '1.5px solid #1A1A1A',
+            boxShadow: '2px 2px 0 #1A1A1A',
+            lineHeight: 1,
+          }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#F45B69'; e.currentTarget.style.borderColor = '#F45B69'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#CCCCCC'; e.currentTarget.style.borderColor = '#1A1A1A'; }}
+          title="Remove"
+        >
+          <Trash2 size={14} />
+        </button>
+      </div>
+
+      {showPicker && (
+        <AvatarPicker person={person} onChange={onChange} />
+      )}
     </div>
   );
 }
@@ -176,8 +372,11 @@ export function RosterSetup({ people, setPeople, config, setConfig, onGenerate }
   function randomFillAll() {
     setPeople(prev => prev.map(p => ({
       ...p,
+      gender: Math.random() < 0.5 ? 'male' : 'female',
       skill: SKILL_LEVELS[Math.floor(Math.random() * SKILL_LEVELS.length)],
       department: DEPT_CHOICES[Math.floor(Math.random() * DEPT_CHOICES.length)],
+      hairstyle: Math.floor(Math.random() * 4),
+      hairColor: HAIR_COLORS[Math.floor(Math.random() * HAIR_COLORS.length)],
     })));
   }
 
@@ -340,7 +539,7 @@ export function RosterSetup({ people, setPeople, config, setConfig, onGenerate }
             boxShadow: '2px 2px 0 #1A1A1A',
             fontSize: 13,
           }}
-          title="Randomly fill skill & department for everyone"
+          title="Randomly fill skill, department & avatar looks for everyone"
         >
           🎲 Random Fill All
         </button>
